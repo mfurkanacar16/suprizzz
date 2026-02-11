@@ -1,106 +1,342 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Mesila 💖</title>
 
   <style>
+    :root{
+      --pink1:#ffdde1;
+      --pink2:#ee9ca7;
+      --accent:#ff4b6e;
+      --glass: rgba(255,255,255,0.18);
+      --glass2: rgba(255,255,255,0.12);
+    }
+
+    *{box-sizing:border-box}
     body {
       margin: 0;
       font-family: Arial, sans-serif;
-      background: linear-gradient(to bottom, #ffdde1, #ee9ca7);
+      background: linear-gradient(180deg, var(--pink1), var(--pink2));
       height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      overflow:hidden;
+      display: grid;
+      place-items: center;
       text-align: center;
       color: white;
     }
 
+    /* Arka plan hafif hareket */
+    .bg {
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(1200px 600px at 20% 20%, rgba(255,255,255,0.22), transparent 60%),
+        radial-gradient(900px 500px at 80% 30%, rgba(255,255,255,0.18), transparent 60%),
+        radial-gradient(900px 600px at 50% 90%, rgba(255,255,255,0.12), transparent 60%);
+      filter: blur(0px);
+      animation: bgFloat 8s ease-in-out infinite;
+      pointer-events:none;
+      z-index:0;
+    }
+    @keyframes bgFloat{
+      0%,100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+
+    /* Cam kart */
     .container {
-      max-width: 400px;
-      padding: 20px;
+      position: relative;
+      z-index: 2;
+      width: min(92vw, 420px);
+      padding: 22px 18px;
+      border-radius: 22px;
+      background: linear-gradient(180deg, var(--glass), var(--glass2));
+      border: 1px solid rgba(255,255,255,0.22);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 14px 40px rgba(0,0,0,0.18);
+      transform: translateY(12px);
+      opacity: 0;
+      animation: enter 900ms ease forwards;
+    }
+    @keyframes enter{
+      to{ transform: translateY(0px); opacity: 1; }
     }
 
     h1 {
-      font-size: 2rem;
-      margin-bottom: 10px;
+      font-size: 1.9rem;
+      margin: 6px 0 6px;
+      letter-spacing: 0.2px;
+      text-shadow: 0 8px 22px rgba(0,0,0,0.18);
+    }
+
+    .sub {
+      opacity: 0.95;
+      margin: 0 0 14px;
+      font-size: 1rem;
+    }
+
+    /* Sayaç kutusu */
+    .counterWrap{
+      margin: 16px 0 18px;
+      padding: 14px 14px;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,0.22);
+      background: rgba(255,255,255,0.10);
     }
 
     #counter {
-      font-size: 1.3rem;
-      margin: 20px 0;
-      font-weight: bold;
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: 0.2px;
     }
 
+    .tiny {
+      margin-top: 8px;
+      font-size: 0.95rem;
+      opacity: 0.95;
+    }
+
+    /* Buton: glow + shine */
     button {
-      padding: 15px 30px;
+      position: relative;
+      padding: 14px 30px;
       border: none;
-      border-radius: 25px;
-      font-size: 1.1rem;
+      border-radius: 999px;
+      font-size: 1.08rem;
       cursor: pointer;
       background: white;
-      color: #ff4b6e;
-      font-weight: bold;
-      transition: 0.2s;
+      color: var(--accent);
+      font-weight: 900;
+      transition: transform .15s ease, box-shadow .15s ease;
+      box-shadow: 0 10px 25px rgba(255,75,110,0.35);
+      overflow:hidden;
+      -webkit-tap-highlight-color: transparent;
     }
+    button:hover { transform: scale(1.04); }
+    button:active { transform: scale(0.98); }
 
-    button:hover {
-      transform: scale(1.05);
+    button::after{
+      content:"";
+      position:absolute;
+      inset:-40% -60%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.65), transparent);
+      transform: rotate(18deg) translateX(-120%);
+      animation: shine 2.6s ease-in-out infinite;
+    }
+    @keyframes shine{
+      0%{ transform: rotate(18deg) translateX(-120%); opacity:0; }
+      35%{ opacity:1; }
+      60%{ transform: rotate(18deg) translateX(120%); opacity:0; }
+      100%{ opacity:0; }
     }
 
     .footer-text {
-      margin-top: 15px;
-      font-size: 1rem;
-      opacity: 0.9;
+      margin-top: 14px;
+      font-size: 0.98rem;
+      opacity: 0.92;
+    }
+
+    /* Uçuşan kalpler canvas */
+    canvas#hearts {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      pointer-events:none;
+    }
+
+    /* Küçük rozet */
+    .badge{
+      display:inline-flex;
+      gap:8px;
+      align-items:center;
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.14);
+      border: 1px solid rgba(255,255,255,0.18);
+      font-size: 0.92rem;
+      margin: 0 auto 10px;
+    }
+
+    /* Sayıların “tık tık” animasyonu */
+    .pulse{
+      animation: pulse 350ms ease;
+    }
+    @keyframes pulse{
+      0%{ transform: scale(1); }
+      40%{ transform: scale(1.02); }
+      100%{ transform: scale(1); }
     }
   </style>
 </head>
 
 <body>
+  <div class="bg"></div>
+  <canvas id="hearts"></canvas>
+
   <div class="container">
-    <h1>💘 Mesila ile Hikayemiz</h1>
+    <div class="badge">💘 <span>Mesila ile Hikayemiz</span></div>
+    <h1>8 Aralık 2025’te başladık…</h1>
 
-    <p>8 Aralık 2025’te başladık…</p>
+    <div class="counterWrap">
+      <div id="counter">Yükleniyor...</div>
+      <div class="tiny" id="detail">Toplam saniye: ...</div>
+    </div>
 
-    <div id="counter">Yükleniyor...</div>
-
-    <button onclick="goGame()">Oyuna Gir 🎮</button>
-
+    <button id="btn">Oyuna Gir 🎮</button>
     <div class="footer-text">Daha nice aylara ;) 💖</div>
   </div>
 
   <script>
-    // Tanışma tarihi
+    // ---- Sayaç (daha detaylı) ----
     const startDate = new Date("2025-12-08T00:00:00");
+    const counterEl = document.getElementById("counter");
+    const detailEl = document.getElementById("detail");
+    const btn = document.getElementById("btn");
+
+    function pad(n){ return String(n).padStart(2,"0"); }
 
     function updateCounter() {
       const now = new Date();
       const diff = now - startDate;
 
       if (diff < 0) {
-        document.getElementById("counter").innerHTML =
-          "Henüz başlamadı ama yakında 💖";
+        counterEl.textContent = "Henüz başlamadı ama yakında 💖";
+        detailEl.textContent = "";
         return;
       }
 
-      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
-      const minutes = Math.floor((diff / (1000 * 60)) % 60);
-      const seconds = Math.floor((diff / 1000) % 60);
+      const totalSeconds = Math.floor(diff / 1000);
+      const totalMinutes = Math.floor(totalSeconds / 60);
+      const totalHours   = Math.floor(totalMinutes / 60);
 
-      document.getElementById("counter").innerHTML =
-        `${days} gün ${hours} saat ${minutes} dakika ${seconds} saniye 💕`;
+      const days = Math.floor(totalHours / 24);
+      const hours = totalHours % 24;
+      const minutes = totalMinutes % 60;
+      const seconds = totalSeconds % 60;
+
+      // mini animasyon
+      counterEl.classList.remove("pulse");
+      void counterEl.offsetWidth;
+      counterEl.classList.add("pulse");
+
+      counterEl.innerHTML =
+        `${days} gün ${pad(hours)} saat ${pad(minutes)} dk ${pad(seconds)} sn 💕`;
+
+      detailEl.textContent =
+        `Toplam: ${totalSeconds.toLocaleString("tr-TR")} saniye • ${totalMinutes.toLocaleString("tr-TR")} dakika • ${totalHours.toLocaleString("tr-TR")} saat`;
     }
 
     setInterval(updateCounter, 1000);
     updateCounter();
 
-    // Oyuna geçiş
-    function goGame() {
-      window.location.href = "loading.html";
+    // ---- Buton tık: titreşim + minik efekt + yönlendirme ----
+    btn.addEventListener("click", () => {
+      try { navigator.vibrate?.(35); } catch(e){}
+
+      // kalp patlat
+      burstHearts(window.innerWidth/2, window.innerHeight/2, 14);
+
+      setTimeout(() => {
+        window.location.href = "loading.html";
+      }, 250);
+    });
+
+    // ---- Uçuşan Kalpler (Canvas) ----
+    const canvas = document.getElementById("hearts");
+    const ctx = canvas.getContext("2d");
+    let W, H;
+
+    function resize(){
+      W = canvas.width = window.innerWidth * devicePixelRatio;
+      H = canvas.height = window.innerHeight * devicePixelRatio;
+      ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
     }
+    window.addEventListener("resize", resize);
+    resize();
+
+    const hearts = [];
+    function rand(min,max){ return Math.random()*(max-min)+min; }
+
+    function spawnHeart(x = rand(0, window.innerWidth), y = window.innerHeight + 20) {
+      hearts.push({
+        x, y,
+        vy: rand(0.6, 1.6),
+        vx: rand(-0.3, 0.3),
+        size: rand(10, 22),
+        rot: rand(0, Math.PI*2),
+        vr: rand(-0.02, 0.02),
+        alpha: rand(0.35, 0.8)
+      });
+    }
+
+    // başlangıçta biraz kalp
+    for(let i=0;i<18;i++) spawnHeart(rand(0, window.innerWidth), rand(0, window.innerHeight));
+
+    // sürekli yeni kalp
+    setInterval(() => {
+      if (hearts.length < 40) spawnHeart();
+    }, 400);
+
+    function drawHeart(x,y,size,rot,alpha){
+      ctx.save();
+      ctx.translate(x,y);
+      ctx.rotate(rot);
+      ctx.globalAlpha = alpha;
+
+      ctx.beginPath();
+      const s = size;
+      ctx.moveTo(0, s*0.35);
+      ctx.bezierCurveTo(0, 0, -s, 0, -s, s*0.35);
+      ctx.bezierCurveTo(-s, s*0.85, 0, s*1.05, 0, s*1.35);
+      ctx.bezierCurveTo(0, s*1.05, s, s*0.85, s, s*0.35);
+      ctx.bezierCurveTo(s, 0, 0, 0, 0, s*0.35);
+      ctx.closePath();
+
+      ctx.fillStyle = "rgba(255,255,255,0.95)";
+      ctx.fill();
+      ctx.restore();
+    }
+
+    function animate(){
+      ctx.clearRect(0,0,window.innerWidth, window.innerHeight);
+
+      for(let i=hearts.length-1;i>=0;i--){
+        const h = hearts[i];
+        h.y -= h.vy;
+        h.x += h.vx;
+        h.rot += h.vr;
+
+        drawHeart(h.x, h.y, h.size, h.rot, h.alpha);
+
+        if (h.y < -40) hearts.splice(i,1);
+      }
+
+      requestAnimationFrame(animate);
+    }
+    animate();
+
+    // tıkta patlama
+    function burstHearts(x,y,count){
+      for(let i=0;i<count;i++){
+        hearts.push({
+          x: x + rand(-40, 40),
+          y: y + rand(-20, 20),
+          vy: rand(1.2, 2.8),
+          vx: rand(-1.4, 1.4),
+          size: rand(8, 18),
+          rot: rand(0, Math.PI*2),
+          vr: rand(-0.08, 0.08),
+          alpha: rand(0.45, 0.9)
+        });
+      }
+    }
+
+    // ekrana dokununca küçük patlama (mobilde güzel)
+    window.addEventListener("pointerdown", (e) => {
+      burstHearts(e.clientX, e.clientY, 8);
+    });
   </script>
 </body>
 </html>
