@@ -16,9 +16,6 @@
             overflow: hidden;
             font-family: 'Press Start 2P', cursive;
             background-color: #1a0f2e;
-            display: flex;
-            justify-content: center;
-            align-items: center;
         }
 
         /* --- VİDEO ARKA PLAN --- */
@@ -31,11 +28,11 @@
             width: auto;
             height: auto;
             z-index: 1;
-            transform: translateX(-50%) translateY(-50%);
-            object-fit: cover; /* Videonun ekranı tam kaplamasını sağlar */
+            transform: translate(-50%, -50%);
+            object-fit: cover;
         }
 
-        /* --- ARKA PLAN KATMANI VE OVERLAY --- */
+        /* --- ANA İÇERİK KATMANI --- */
         .main-content {
             position: relative;
             width: 100%;
@@ -43,28 +40,24 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            z-index: 2; /* Videonun üzerinde kalması için */
+            z-index: 2;
         }
 
         .overlay {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            /* Videonun üzerine hafif bir karartma ve rün mavisi parlaması ekler */
-            background: radial-gradient(circle, rgba(130, 224, 255, 0.1) 0%, rgba(20, 10, 40, 0.5) 100%);
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle, rgba(130, 224, 255, 0.1) 0%, rgba(20, 10, 40, 0.6) 100%);
             z-index: 3;
             pointer-events: none;
         }
 
-        /* --- MENÜ KUTUSU --- */
+        /* --- MENÜ KUTUSU (Responsive Ayarlandı) --- */
         .rune-container {
             position: relative;
             z-index: 10;
-            width: 360px;
+            width: 320px; /* Genişlik sabitlendi ama padding ile esneklik sağlandı */
             max-width: 85%;
-            padding: 35px 25px;
+            padding: 30px 20px;
             background-color: rgba(30, 20, 50, 0.9); 
             border: 4px solid #82e0ff;
             box-shadow: 0 0 20px rgba(130, 224, 255, 0.4), inset 0 0 15px rgba(0, 0, 0, 0.6);
@@ -104,31 +97,7 @@
         .btn-note { background-color: #d95763; border-bottom: 4px solid #ac3232; }
         .btn-exit { background-color: #3f3f74; border-bottom: 4px solid #222252; opacity: 0.8; }
 
-        /* --- MOBİL UYARI --- */
-        #rotate-warning {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-color: #1a1a2e;
-            z-index: 9999;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            color: #82e0ff;
-            text-align: center;
-        }
-
-        @keyframes rotateAnim {
-            0% { transform: rotate(0deg); }
-            50% { transform: rotate(-90deg); }
-            100% { transform: rotate(0deg); }
-        }
-
-        @media only screen and (orientation: portrait) {
-            #rotate-warning { display: flex; }
-            .main-content { display: none; }
-            #bg-video { display: none; }
-        }
+        /* Eski "rotate-warning" kaldırıldı çünkü artık her modda çalışıyor */
     </style>
 </head>
 <body>
@@ -137,11 +106,6 @@
         <source src="menu.bg.mp4" type="video/mp4">
         Tarayıcınız video etiketini desteklemiyor.
     </video>
-
-    <div id="rotate-warning">
-        <div style="font-size: 50px; animation: rotateAnim 2s infinite;">📱</div>
-        <p style="padding: 20px; font-size: 12px; line-height: 2;">BÜYÜLÜ ORMANI GÖRMEK İÇİN<br>TELEFONU YAN ÇEVİR</p>
-    </div>
 
     <div class="main-content">
         <div class="overlay"></div>
