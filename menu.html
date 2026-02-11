@@ -51,11 +51,11 @@
             pointer-events: none;
         }
 
-        /* --- MENÜ KUTUSU (Responsive Ayarlandı) --- */
+        /* --- MENÜ KUTUSU --- */
         .rune-container {
             position: relative;
             z-index: 10;
-            width: 320px; /* Genişlik sabitlendi ama padding ile esneklik sağlandı */
+            width: 320px;
             max-width: 85%;
             padding: 30px 20px;
             background-color: rgba(30, 20, 50, 0.9); 
@@ -96,8 +96,6 @@
         .btn-info { background-color: #82e0ff; border-bottom: 4px solid #4da6ff; color: #1a1a2e; text-shadow: none; }
         .btn-note { background-color: #d95763; border-bottom: 4px solid #ac3232; }
         .btn-exit { background-color: #3f3f74; border-bottom: 4px solid #222252; opacity: 0.8; }
-
-        /* Eski "rotate-warning" kaldırıldı çünkü artık her modda çalışıyor */
     </style>
 </head>
 <body>
@@ -123,10 +121,24 @@
     </div>
 
     <script>
-        function startGame() { alert("Dünya yükleniyor... Pikseller canlanıyor! ✨"); }
-        function openInfo() { alert("Bu dijital dünya, senin için özel olarak kodlandı. Her rün bir sevgi mesajı taşıyor. 💙"); }
-        function openNote() { alert("Sevgilim,\n\nBu ormanın içindeki parlayan taşlar gibi, sen de benim hayatımın en parlak ışığısın. Seni çok seviyorum! 14 Şubat Kutlu Olsun."); }
-        function quitGame() { if(confirm("Büyülü dünyadan çıkmak istediğine emin misin?")) { window.close(); } }
+        function startGame() { 
+            // Yönlendirme işlemi burada yapılıyor
+            window.location.href = "game.html"; 
+        }
+
+        function openInfo() { 
+            alert("Bu dijital dünya, senin için özel olarak kodlandı. Her rün bir sevgi mesajı taşıyor. 💙"); 
+        }
+
+        function openNote() { 
+            alert("Sevgilim,\n\nBu ormanın içindeki parlayan taşlar gibi, sen de benim hayatımın en parlak ışığısın. Seni çok seviyorum! 14 Şubat Kutlu Olsun."); 
+        }
+
+        function quitGame() { 
+            if(confirm("Büyülü dünyadan çıkmak istediğine emin misin?")) { 
+                window.close(); 
+            } 
+        }
     </script>
 </body>
 </html>
