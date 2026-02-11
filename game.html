@@ -1,1 +1,259 @@
-<p> YAKINDA ;) </p>
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Forest Fight</title>
+<style>
+  body{ margin:0; overflow:hidden; background:#000; }
+  canvas{ display:block; }
+  #ui{
+    position:fixed; top:10px; left:10px; z-index:10;
+    color:#fff; font: 18px monospace;
+    background: rgba(0,0,0,0.35); padding:8px 10px; border-radius:8px;
+  }
+  #msg{
+    position:fixed; left:50%; top:50%; transform:translate(-50%,-50%);
+    color:#fff; font: 16px monospace; text-align:center;
+    background: rgba(0,0,0,0.55); padding:14px 16px; border-radius:10px;
+    z-index:10; display:none;
+    white-space: pre-line;
+  }
+</style>
+</head>
+<body>
+
+<div id="ui">Can: <span id="hp">3</span></div>
+<div id="msg"></div>
+<canvas id="game"></canvas>
+
+<script>
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
+const msg = document.getElementById("msg");
+
+function resize(){
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+window.addEventListener("resize", resize);
+resize();
+
+let hp = 3;
+document.getElementById("hp").textContent = hp;
+
+// === ASSET PATHS (dosya adların bunlar olmalı) ===
+const SRC_BG     = "assets/forest.png";
+const SRC_PLAYER = "assets/girl.png";
+const SRC_ENEMY  = "assets/witch.png";
+// ==============================================
+
+// Forest görselinde üst/alt siyah boşluk varsa kırp (0.0 - 0.5 arası oynat)
+const BG_CROP_TOP = 0.00;
+const BG_CROP_BOTTOM = 0.00;
+
+// ÇİMEN çizgisini ayarla: 0..1 (0 üst, 1 alt)
+// Senin forest’ta çimen çizgisi biraz aşağıda -> 0.78 iyi başlar
+let GROUND_LINE = 0.78;
+
+function loadImg(src){
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = () => reject(src);
+    img.src = src;
+  });
+}
+
+async function loadAssets(){
+  msg.style.display = "block";
+  msg.style.color = "#fff";
+  msg.textContent = "Loading assets...";
+  try{
+    const [bg, playerImg, enemyImg] = await Promise.all([
+      loadImg(SRC_BG),
+      loadImg(SRC_PLAYER),
+      loadImg(SRC_ENEMY),
+    ]);
+    msg.style.display = "none";
+    return {bg, playerImg, enemyImg};
+  }catch(badSrc){
+    msg.style.display = "block";
+    msg.style.color = "#ff5a5a";
+    msg.innerHTML =
+      "ASSET BULUNAMADI ❌<br><br>" +
+      "Bulunamayan: <b>" + badSrc + "</b><br><br>" +
+      "GitHub'da dosya adı / klasör yolu aynı mı kontrol et.";
+    throw new Error("Asset missing: " + badSrc);
+  }
+}
+
+let keys = {};
+document.addEventListener("keydown", e=> keys[e.key]=true);
+document.addEventListener("keyup", e=> keys[e.key]=false);
+
+// saldırı (şimdilik mermi)
+document.addEventListener("click", ()=>{
+  bullets.push({
+    x: player.x + player.w*0.75,
+    y: player.y + player.h*0.55,
+    w: 22 * scale,
+    h: 7 * scale,
+    speed: 14 * scale
+  });
+});
+
+let scale = 1;
+
+// Karakter boyutu: ekrana göre
+function computeScale(){
+  // referans 720px yükseklik = 1.0
+  const s = canvas.height / 720;
+  scale = Math.max(0.9, Math.min(1.6, s)); // daha büyük aralık
+}
+
+let player = { x:120, y:0, w:180, h:180, speed:6 };
+let bullets = [];
+let enemies = [];
+
+function groundY(){
+  // karakterin ayağı çimen çizgisine bassın
+  const lineY = canvas.height * GROUND_LINE;
+  return lineY - player.h; // sprite’ın altı = lineY
+}
+
+function spawnEnemy(){
+  enemies.push({
+    x: canvas.width + 80,
+    y: groundY(),
+    w: 180 * scale,
+    h: 180 * scale,
+    speed: 2.6 * scale
+  });
+}
+
+function aabb(a,b){
+  return a.x < b.x+b.w && a.x+a.w > b.x && a.y < b.y+b.h && a.y+a.h > b.y;
+}
+
+// “cover” çizim (oran bozmadan doldurur, taşanı kırpar)
+function drawImageCover(img, dx, dy, dw, dh, cropTop=0, cropBottom=0){
+  const swFull = img.width;
+  const shFull = img.height;
+
+  const cropY = Math.floor(shFull * cropTop);
+  const cropH = Math.floor(shFull * (1 - cropTop - cropBottom));
+
+  const sw = swFull;
+  const sh = Math.max(1, cropH);
+
+  const s = Math.max(dw / sw, dh / sh);
+  const rw = sw * s;
+  const rh = sh * s;
+
+  const x = dx + (dw - rw) / 2;
+  const y = dy + (dh - rh) / 2;
+
+  ctx.drawImage(img, 0, cropY, sw, sh, x, y, rw, rh);
+}
+
+let msgTimer = 0;
+function showCenterMsg(text){
+  msg.style.display = "block";
+  msg.style.color = "#fff";
+  msg.textContent = text;
+  msgTimer = 55;
+}
+
+function update(){
+  computeScale();
+
+  // player boyut/sürat scale’e göre
+  player.w = 180 * scale;
+  player.h = 180 * scale;
+  player.speed = 6.5 * scale;
+
+  player.y = groundY();
+
+  if(keys["a"] || keys["ArrowLeft"]) player.x -= player.speed;
+  if(keys["d"] || keys["ArrowRight"]) player.x += player.speed;
+
+  player.x = Math.max(0, Math.min(canvas.width - player.w, player.x));
+
+  bullets.forEach(b=> b.x += b.speed);
+  bullets = bullets.filter(b => b.x < canvas.width + 80);
+
+  enemies.forEach(e=> {
+    e.y = groundY();         // zeminle beraber hizalı kalsın
+    e.x -= e.speed;
+  });
+  enemies = enemies.filter(e => e.x > -400);
+
+  // bullet-enemy
+  for(let ei = enemies.length-1; ei>=0; ei--){
+    const e = enemies[ei];
+    for(let bi = bullets.length-1; bi>=0; bi--){
+      const b = bullets[bi];
+      if(aabb(b,e)){
+        enemies.splice(ei,1);
+        bullets.splice(bi,1);
+        break;
+      }
+    }
+  }
+
+  // player-enemy
+  for(let ei = enemies.length-1; ei>=0; ei--){
+    const e = enemies[ei];
+    if(aabb(player,e)){
+      enemies.splice(ei,1);
+      hp--;
+      document.getElementById("hp").textContent = hp;
+      showCenterMsg("VAY ENAYİ 😭\n1 CAN GİTTİ!");
+      if(hp<=0){
+        alert("GAME OVER 😈");
+        location.reload();
+      }
+    }
+  }
+
+  if(msgTimer > 0){
+    msgTimer--;
+    if(msgTimer === 0) msg.style.display = "none";
+  }
+}
+
+function draw(assets){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  // Forest’ı full screen cover yap (siyahlık biter)
+  ctx.imageSmoothingEnabled = true;
+  drawImageCover(assets.bg, 0, 0, canvas.width, canvas.height, BG_CROP_TOP, BG_CROP_BOTTOM);
+
+  // Sprite’lar pixel olsun
+  ctx.imageSmoothingEnabled = false;
+
+  ctx.drawImage(assets.playerImg, player.x, player.y, player.w, player.h);
+
+  ctx.fillStyle = "#ffffff";
+  bullets.forEach(b=> ctx.fillRect(b.x,b.y,b.w,b.h));
+
+  enemies.forEach(e=>{
+    ctx.drawImage(assets.enemyImg, e.x, e.y, e.w, e.h);
+  });
+}
+
+(async ()=>{
+  const assets = await loadAssets();
+  setInterval(spawnEnemy, 2000);
+
+  function loop(){
+    update();
+    draw(assets);
+    requestAnimationFrame(loop);
+  }
+  loop();
+})();
+</script>
+</body>
+</html>
