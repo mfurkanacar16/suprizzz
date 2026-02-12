@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Pixel Love Adventure</title>
+    <title>SEVGİLİLER GÜNÜN KUTLU OLSUN</title>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     
     <style>
@@ -46,26 +46,113 @@
         .overlay {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle, rgba(130, 224, 255, 0.1) 0%, rgba(20, 10, 40, 0.6) 100%);
+            background: radial-gradient(circle, rgba(130, 224, 255, 0.1) 0%, rgba(20, 10, 40, 0.7) 100%);
             z-index: 3;
             pointer-events: none;
         }
 
-        /* --- MENÜ KUTUSU --- */
-        .rune-container {
-            position: relative;
-            z-index: 10;
-            width: 320px;
-            max-width: 85%;
-            padding: 30px 20px;
-            background-color: rgba(30, 20, 50, 0.9); 
+        /* --- ORTAK KUTU STİLİ --- */
+        .box-style {
+            background-color: rgba(30, 20, 50, 0.95); 
             border: 4px solid #82e0ff;
             box-shadow: 0 0 20px rgba(130, 224, 255, 0.4), inset 0 0 15px rgba(0, 0, 0, 0.6);
+            padding: 30px 20px;
             display: flex;
             flex-direction: column;
             gap: 15px;
             animation: floatBox 4s ease-in-out infinite;
         }
+
+        /* --- MENÜ KUTUSU --- */
+        .rune-container {
+            width: 320px;
+            max-width: 85%;
+            z-index: 10;
+        }
+
+        /* --- HİKAYE MODAL (YENİ EKLENDİ) --- */
+        .story-modal {
+            display: none; /* Başlangıçta gizli */
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85); /* Arkası kararsın */
+            z-index: 20;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .story-box {
+            width: 350px;
+            max-width: 90%;
+            /* box-style ile aynı görsel özellikler */
+            background-color: rgba(30, 20, 50, 0.98); 
+            border: 4px solid #ffd700; /* Hikaye kutusu altın çerçeveli olsun */
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.3);
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .story-title {
+            color: #ffd700;
+            text-align: center;
+            font-size: 14px;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px #000;
+            text-decoration: underline;
+        }
+
+        .story-text {
+            color: #fff;
+            font-size: 10px;
+            line-height: 1.8; /* Satır aralığı */
+            text-align: justify;
+            max-height: 300px;
+            overflow-y: auto; /* Yazı çok uzunsa kaydırma çubuğu çıksın */
+        }
+
+        /* --- KARAKTER SEÇİM EKRANI --- */
+        .char-selection-screen {
+            display: none;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            gap: 30px;
+            z-index: 10;
+            max-width: 90%;
+        }
+
+        @media (max-width: 768px) {
+            .char-selection-screen {
+                flex-direction: column;
+                width: 300px;
+            }
+            @media (max-width: 768px) { 
+
+             }
+        }
+
+        /* Karakter Görsel Alanı */
+        .char-card { text-align: center; }
+        .char-title { color: #ff9ec6; font-size: 14px; margin-bottom: 15px; text-shadow: 2px 2px #000; }
+        .char-img-box {
+            width: 150px; height: 150px; border: 4px solid #fff; background: #4a3b69;
+            margin: 0 auto 15px auto; display: flex; justify-content: center; align-items: center;
+            image-rendering: pixelated;
+        }
+        .char-img-box img { width: 80%; height: auto; filter: drop-shadow(0 0 5px rgba(255,255,255,0.5)); }
+
+        /* İstatistikler Alanı */
+        .stats-container { width: 250px; color: #fff; font-size: 10px; }
+        .stat-row { margin-bottom: 15px; }
+        .stat-label { display: flex; justify-content: space-between; margin-bottom: 5px; color: #ddd; }
+        .progress-bar { width: 100%; height: 12px; background-color: #222; border: 2px solid #555; position: relative; }
+        .progress-fill { height: 100%; width: 0%; transition: width 1s ease-out; }
+        .fill-beauty { background-color: #ff69b4; box-shadow: 0 0 5px #ff69b4; }
+        .fill-intel { background-color: #4da6ff; box-shadow: 0 0 5px #4da6ff; }
+        .fill-warrior { background-color: #ff4d4d; box-shadow: 0 0 5px #ff4d4d; }
 
         @keyframes floatBox {
             0%, 100% { transform: translateY(0); }
@@ -74,62 +161,133 @@
 
         /* --- BUTONLAR --- */
         .pixel-btn {
-            font-family: 'Press Start 2P', cursive;
-            font-size: 10px;
-            padding: 15px 10px;
-            color: #fff;
-            text-transform: uppercase;
-            cursor: pointer;
-            border: none;
-            position: relative;
-            text-shadow: 2px 2px #000;
-            transition: all 0.1s;
-            box-shadow: 4px 4px 0px #000;
+            font-family: 'Press Start 2P', cursive; font-size: 10px; padding: 15px 10px;
+            color: #fff; text-transform: uppercase; cursor: pointer; border: none;
+            position: relative; text-shadow: 2px 2px #000; transition: all 0.1s;
+            box-shadow: 4px 4px 0px #000; width: 100%;
         }
-
-        .pixel-btn:active {
-            transform: translate(3px, 3px);
-            box-shadow: 1px 1px 0px #000;
-        }
-
+        .pixel-btn:active { transform: translate(3px, 3px); box-shadow: 1px 1px 0px #000; }
         .btn-start { background-color: #7ab35a; border-bottom: 4px solid #548b3b; }
-        .btn-info { background-color: #82e0ff; border-bottom: 4px solid #4da6ff; color: #1a1a2e; text-shadow: none; }
+        
+        /* HİKAYE BUTONU RENGİ */
+        .btn-story { background-color: #9b59b6; border-bottom: 4px solid #8e44ad; }
+        
         .btn-note { background-color: #d95763; border-bottom: 4px solid #ac3232; }
         .btn-exit { background-color: #3f3f74; border-bottom: 4px solid #222252; opacity: 0.8; }
+        .btn-select { background-color: #ffd700; border-bottom: 4px solid #c5a600; color: #1a0f2e; text-shadow: none; margin-top: 10px; animation: pulseBtn 1.5s infinite; }
+        
+        /* KAPAT BUTONU */
+        .btn-close { background-color: #e74c3c; border-bottom: 4px solid #c0392b; margin-top: 10px; }
+
+        @keyframes pulseBtn {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
     </style>
 </head>
 <body>
 
     <video autoplay muted loop playsinline id="bg-video">
         <source src="menu.bg.mp4" type="video/mp4">
-        Tarayıcınız video etiketini desteklemiyor.
     </video>
 
     <div class="main-content">
         <div class="overlay"></div>
 
-        <div class="rune-container">
+        <div class="rune-container box-style" id="mainMenu">
             <div style="color: #82e0ff; font-size: 10px; margin-bottom: 10px; text-align: center;">--- ᛫ ᚱ ᚢ ᚾ ᛖ ᛫ ---</div>
 
-            <button class="pixel-btn btn-start" onclick="startGame()">MACERAYA BAŞLA</button>
-            <button class="pixel-btn btn-info" onclick="openInfo()">NEDİR BU?</button>
+            <button class="pixel-btn btn-start" onclick="showCharacterSelect()">MACERAYA BAŞLA</button>
+            
+            <button class="pixel-btn btn-story" onclick="openStory()">HİKAYE</button>
+            
             <button class="pixel-btn btn-note" onclick="openNote()">SANA NOTUM</button>
             <button class="pixel-btn btn-exit" onclick="quitGame()">AYRIL</button>
             
             <div style="text-align: center; margin-top: 10px; font-size: 8px; color: #82e0ff; opacity: 0.6;">v1.0 - Magic Edition</div>
         </div>
+
+        <div class="char-selection-screen box-style" id="charSelect">
+            <div class="char-card">
+                <div class="char-title">MESİLA</div>
+                <div class="char-img-box">
+                    <img src="girl.png" alt="Character">
+                </div>
+                <div style="font-size: 8px; color: #aaa; margin-top:5px;">Sınıf: Eşsiz</div>
+            </div>
+            <div class="stats-container">
+                <div style="text-align: center; margin-bottom: 20px; color: #ffd700; font-size: 12px;">İSTATİSTİKLER</div>
+                <div class="stat-row">
+                    <div class="stat-label"><span>GÜZELLİK</span><span>100/100</span></div>
+                    <div class="progress-bar"><div class="progress-fill fill-beauty" id="bar-beauty"></div></div>
+                </div>
+                <div class="stat-row">
+                    <div class="stat-label"><span>ZEKA</span><span>100/100</span></div>
+                    <div class="progress-bar"><div class="progress-fill fill-intel" id="bar-intel"></div></div>
+                </div>
+                <div class="stat-row">
+                    <div class="stat-label"><span>SAVAŞÇI RUHU</span><span>100/100</span></div>
+                    <div class="progress-bar"><div class="progress-fill fill-warrior" id="bar-warrior"></div></div>
+                </div>
+                <button class="pixel-btn btn-select" onclick="enterGame()">BU KARAKTERİ SEÇ</button>
+                <div style="text-align: center; margin-top: 10px; cursor: pointer; font-size: 8px; color: #d95763;" onclick="backToMenu()">&lt; GERİ DÖN</div>
+            </div>
+        </div>
+
+        <div id="storyModal" class="story-modal">
+            <div class="story-box">
+                <div class="story-title">HİKAYE</div>
+                <div class="story-text">
+                    
+                    Sana eşek ayarladım kaç diye :p, yalnız eşeği alırken elf(bana bir yerden tanıdık geldi;),büyücü kadın(buda tanıdık geldi),goblin üç ucubeyi yenip eşeği kurtarıp yanıma gelion dhkfdgfgfdsg 
+                    <br><br>
+                   
+                  
+                   
+
+                </div>
+                <button class="pixel-btn btn-close" onclick="closeStory()">KAPAT</button>
+            </div>
+        </div>
+
     </div>
 
     <script>
-        function startGame() { 
-            // Yönlendirme işlemi burada yapılıyor
-            window.location.href = "game.html"; 
+        // --- HİKAYE FONKSİYONLARI ---
+        function openStory() {
+            document.getElementById('storyModal').style.display = 'flex';
         }
 
-        function openInfo() { 
-            alert("Bu dijital dünya, senin için özel olarak kodlandı. Her rün bir sevgi mesajı taşıyor. 💙"); 
+        function closeStory() {
+            document.getElementById('storyModal').style.display = 'none';
         }
 
+        // --- Karakter Seçim Fonksiyonları ---
+        function showCharacterSelect() {
+            document.getElementById('mainMenu').style.display = 'none';
+            document.getElementById('charSelect').style.display = 'flex';
+            setTimeout(() => {
+                document.getElementById('bar-beauty').style.width = '100%';
+                document.getElementById('bar-intel').style.width = '100%';
+                document.getElementById('bar-warrior').style.width = '100%';
+            }, 100);
+        }
+
+        function backToMenu() {
+            document.getElementById('bar-beauty').style.width = '0%';
+            document.getElementById('bar-intel').style.width = '0%';
+            document.getElementById('bar-warrior').style.width = '0%';
+            document.getElementById('charSelect').style.display = 'none';
+            document.getElementById('mainMenu').style.display = 'flex';
+        }
+
+        function enterGame() {
+            window.location.href = "game.html";
+        }
+
+        // --- Diğer Fonksiyonlar ---
         function openNote() { 
             alert("Sevgilim,\n\nBu ormanın içindeki parlayan taşlar gibi, sen de benim hayatımın en parlak ışığısın. Seni çok seviyorum! 14 Şubat Kutlu Olsun."); 
         }
