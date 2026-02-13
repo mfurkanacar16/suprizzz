@@ -70,12 +70,12 @@
             z-index: 10;
         }
 
-        /* --- HİKAYE MODAL (YENİ EKLENDİ) --- */
+        /* --- HİKAYE MODAL --- */
         .story-modal {
-            display: none; /* Başlangıçta gizli */
+            display: none;
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.85); /* Arkası kararsın */
+            background: rgba(0, 0, 0, 0.85);
             z-index: 20;
             justify-content: center;
             align-items: center;
@@ -85,9 +85,8 @@
         .story-box {
             width: 350px;
             max-width: 90%;
-            /* box-style ile aynı görsel özellikler */
             background-color: rgba(30, 20, 50, 0.98); 
-            border: 4px solid #ffd700; /* Hikaye kutusu altın çerçeveli olsun */
+            border: 4px solid #ffd700;
             box-shadow: 0 0 25px rgba(255, 215, 0, 0.3);
             padding: 25px;
             display: flex;
@@ -107,10 +106,10 @@
         .story-text {
             color: #fff;
             font-size: 10px;
-            line-height: 1.8; /* Satır aralığı */
+            line-height: 1.8;
             text-align: justify;
             max-height: 300px;
-            overflow-y: auto; /* Yazı çok uzunsa kaydırma çubuğu çıksın */
+            overflow-y: auto;
         }
 
         /* --- KARAKTER SEÇİM EKRANI --- */
@@ -129,9 +128,6 @@
                 flex-direction: column;
                 width: 300px;
             }
-            @media (max-width: 768px) { 
-
-             }
         }
 
         /* Karakter Görsel Alanı */
@@ -168,15 +164,10 @@
         }
         .pixel-btn:active { transform: translate(3px, 3px); box-shadow: 1px 1px 0px #000; }
         .btn-start { background-color: #7ab35a; border-bottom: 4px solid #548b3b; }
-        
-        /* HİKAYE BUTONU RENGİ */
         .btn-story { background-color: #9b59b6; border-bottom: 4px solid #8e44ad; }
-        
         .btn-note { background-color: #d95763; border-bottom: 4px solid #ac3232; }
         .btn-exit { background-color: #3f3f74; border-bottom: 4px solid #222252; opacity: 0.8; }
         .btn-select { background-color: #ffd700; border-bottom: 4px solid #c5a600; color: #1a0f2e; text-shadow: none; margin-top: 10px; animation: pulseBtn 1.5s infinite; }
-        
-        /* KAPAT BUTONU */
         .btn-close { background-color: #e74c3c; border-bottom: 4px solid #c0392b; margin-top: 10px; }
 
         @keyframes pulseBtn {
@@ -184,14 +175,19 @@
             50% { transform: scale(1.05); }
             100% { transform: scale(1); }
         }
-
     </style>
 </head>
 <body>
 
+    <!-- ✅ VİDEO ARKA PLAN (3 sn bile olsa loop eder) -->
     <video autoplay muted loop playsinline id="bg-video">
         <source src="menu.bg.mp4" type="video/mp4">
     </video>
+
+    <!-- ✅ ARKA PLAN MÜZİĞİ (menu.mp3) -->
+    <audio id="bg-music" loop>
+        <source src="menu.mp3" type="audio/mpeg">
+    </audio>
 
     <div class="main-content">
         <div class="overlay"></div>
@@ -200,12 +196,10 @@
             <div style="color: #82e0ff; font-size: 10px; margin-bottom: 10px; text-align: center;">--- ᛫ ᚱ ᚢ ᚾ ᛖ ᛫ ---</div>
 
             <button class="pixel-btn btn-start" onclick="showCharacterSelect()">MACERAYA BAŞLA</button>
-            
             <button class="pixel-btn btn-story" onclick="openStory()">HİKAYE</button>
-            
             <button class="pixel-btn btn-note" onclick="openNote()">SANA NOTUM</button>
             <button class="pixel-btn btn-exit" onclick="quitGame()">AYRIL</button>
-            
+
             <div style="text-align: center; margin-top: 10px; font-size: 8px; color: #82e0ff; opacity: 0.6;">v1.0 - Magic Edition</div>
         </div>
 
@@ -217,20 +211,25 @@
                 </div>
                 <div style="font-size: 8px; color: #aaa; margin-top:5px;">Sınıf: Eşsiz</div>
             </div>
+
             <div class="stats-container">
                 <div style="text-align: center; margin-bottom: 20px; color: #ffd700; font-size: 12px;">İSTATİSTİKLER</div>
+
                 <div class="stat-row">
                     <div class="stat-label"><span>GÜZELLİK</span><span>100/100</span></div>
                     <div class="progress-bar"><div class="progress-fill fill-beauty" id="bar-beauty"></div></div>
                 </div>
+
                 <div class="stat-row">
                     <div class="stat-label"><span>ZEKA</span><span>100/100</span></div>
                     <div class="progress-bar"><div class="progress-fill fill-intel" id="bar-intel"></div></div>
                 </div>
+
                 <div class="stat-row">
                     <div class="stat-label"><span>SAVAŞÇI RUHU</span><span>100/100</span></div>
                     <div class="progress-bar"><div class="progress-fill fill-warrior" id="bar-warrior"></div></div>
                 </div>
+
                 <button class="pixel-btn btn-select" onclick="enterGame()">BU KARAKTERİ SEÇ</button>
                 <div style="text-align: center; margin-top: 10px; cursor: pointer; font-size: 8px; color: #d95763;" onclick="backToMenu()">&lt; GERİ DÖN</div>
             </div>
@@ -240,13 +239,8 @@
             <div class="story-box">
                 <div class="story-title">HİKAYE</div>
                 <div class="story-text">
-                    
                     Sana eşek ayarladım kaç diye :p, yalnız eşeği alırken elf(bana bir yerden tanıdık geldi;),büyücü kadın(buda tanıdık geldi),goblin üç ucubeyi yenip eşeği kurtarıp yanıma gelion dhkfdgfgfdsg 
                     <br><br>
-                   
-                  
-                   
-
                 </div>
                 <button class="pixel-btn btn-close" onclick="closeStory()">KAPAT</button>
             </div>
@@ -255,6 +249,27 @@
     </div>
 
     <script>
+        /* =========================
+           🎵 MP3 ARKA PLAN MÜZİĞİ
+           - Autoplay çoğu cihazda engelli
+           - İlk tıklamada başlatıyoruz
+           - Fade-in (yumuşak yükselme)
+           ========================= */
+        const music = document.getElementById("bg-music");
+
+        document.addEventListener("click", function () {
+            music.volume = 0;
+            music.play().catch(() => {});
+
+            let fade = setInterval(() => {
+                if (music.volume < 0.4) {
+                    music.volume += 0.02;
+                } else {
+                    clearInterval(fade);
+                }
+            }, 200);
+        }, { once: true });
+
         // --- HİKAYE FONKSİYONLARI ---
         function openStory() {
             document.getElementById('storyModal').style.display = 'flex';
